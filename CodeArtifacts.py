@@ -12,6 +12,7 @@ import util
 ####################################
 
 def init(data):
+    print ("HAHAHAHAH")
     data.mode = "homeScreen"
     data.cells = []
     create2dBoard(data)
@@ -118,8 +119,8 @@ class OpenLock1(Locks):
     def __init__(self, x, y):
         super().__init__(x, y)
         self.r = 30
-    def draw(self, canvas): 
-        canvas.create_rectangle(self.x-self.r, self.y-self.r, 
+    def draw(self, canvas):
+        canvas.create_rectangle(self.x-self.r, self.y-self.r,
                                 self.x+self.r, self.y+self.r, fill="blue")
         canvas.create_text(self.x, self.y, text = "1")
 
@@ -146,7 +147,7 @@ def lockRedrawAll(canvas, data):
         lock.draw(canvas)
     for lock in data.openLocks:
         lock.draw(canvas)
-    canvas.create_text(150, 375, text = "Now Create Your Own Level", 
+    canvas.create_text(150, 375, text = "Now Create Your Own Level",
         font = "Comic 20")
 
 ####################################
@@ -157,7 +158,7 @@ def lock1MousePressed(event, data):
     if(event.x>270 and event.x<300 and event.y>0 and event.y<30):
         data.mode = "homeScreen"
     elif(event.x>20 and event.x<80 and event.y>20 and event.y<80):
-        data.mode = "demoLevel" 
+        data.mode = "demoLevel"
 
 def lock1KeyPressed(event, data):
     pass
@@ -173,7 +174,7 @@ def lock1RedrawAll(canvas, data):
         lock.draw(canvas)
     for lock in data.openLocks:
         lock.draw(canvas)
-    canvas.create_text(150, 375, text = "Now Create Your Own Level", 
+    canvas.create_text(150, 375, text = "Now Create Your Own Level",
         font = "Comic 20")
     OpenLock1(50, 50).draw(canvas)
 
@@ -308,7 +309,7 @@ class UpStripedCandy(Candy):
         yellowCandy = PhotoImage(file = "yellowV.gif").subsample(2,2)
         purpleCandy = PhotoImage(file = "purpleV.gif").subsample(2,2)
         orangeCandy = PhotoImage(file = "orangeV.gif").subsample(2,2)
-        
+
 
 class PackagedCandy(Candy):
     def __init__(self, x, y):
@@ -364,7 +365,7 @@ def replaceBomb(candy, other, data):
         checkCandy = candy
     for row in range(rows):
         for col in range(cols):
-            if(data.candies[row][col].color == color or 
+            if(data.candies[row][col].color == color or
                 data.candies[row][col].x == checkCandy.x and
                 data.candies[row][col].y == checkCandy.y):
                 switch = data.candies[row][col]
@@ -432,7 +433,7 @@ def demoLevelRedrawAll(canvas, data):
     (rows, cols) = (9, 9)
     util.drawBackground(canvas, data)
     for row in range(rows):
-        for col in range(cols):                
+        for col in range(cols):
             data.candies[row][col].draw(canvas)
 
 def demoLevelMousePressed(event, data):
@@ -447,7 +448,7 @@ def demoLevelMousePressed(event, data):
             if(event.x>x0 and event.y>y0 and event.x<x1 and event.y<y1):
                 if(data.oneClicked is False):
                     data.oneClicked = True
-                    (data.swapx, data.swapY, data.row, data.col, 
+                    (data.swapx, data.swapY, data.row, data.col,
                         data.swapCandy) =(candy.x, candy.y, row, col, candy)
                     return
                 elif(data.oneClicked is True):
@@ -460,7 +461,7 @@ def demoLevelMousePressed(event, data):
                         data.candies[row][col].x = data.swapx
                         data.candies[row][col].y = data.swapY
                         data.candies[row][col] = data.swapCandy
-                        if(candy.color == "colorful" or 
+                        if(candy.color == "colorful" or
                             data.swapCandy.color == "colorful"):
                             replaceBomb(candy, data.swapCandy, data)
                     (data.swapx, data.swapY, data.row, data.col,
@@ -492,7 +493,7 @@ def run(width=300, height=300):
     def redrawAllWrapper(canvas, data):
         canvas.delete(ALL)
         redrawAll(canvas, data)
-        canvas.update()    
+        canvas.update()
 
     def mousePressedWrapper(event, canvas, data):
         mousePressed(event, data)
