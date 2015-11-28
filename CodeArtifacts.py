@@ -380,6 +380,7 @@ def clearAllOfColor(data, color):
                 data.candies[row][col] = Candy(candy.x, candy.y)
 
 def demoLevelKeyPressed(event, data):
+    print("hi")
     m = util.findMatchingNum(
         data.candies,
         len(data.candies),
