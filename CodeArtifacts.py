@@ -12,7 +12,8 @@ import util
 ####################################
 
 def init(data):
-    print ("HAHAHAHAH")
+    data.rows = 9
+    data.cols = 9
     data.mode = "homeScreen"
     data.cells = []
     create2dBoard(data)
@@ -25,7 +26,7 @@ def init(data):
     data.swapY = None
     data.swapCandy = None
     data.score = 0
-    data.candies = util.turnTo2Dlist(data.cells, 9, 9)
+    data.candies = util.turnTo2Dlist(data.cells, data.rows, data.cols)
     data.moves = 10
     data.target = 3500
     data.passed1 = False
@@ -33,6 +34,12 @@ def init(data):
     data.counter = 0
     data.row = None
     data.col = None
+    data.redH = PhotoImage(file = "redH.gif").subsample(2,2)
+    data.swapHand = False
+    data.swap1 = False
+    data.swapUsed = False
+    data.hammer = False
+    data.hammerUsed = False
 
 ####################################
 # mode dispatcher
@@ -212,7 +219,8 @@ def lostRedrawAll(canvas, data):
 
 def helpMousePressed(event, data):
     (rangex, rangex1, rangey, rangey1) = (260, 300, 0, 40)
-    if(event.x>rangex and event.x< rangex1 and event.y>rangey and event.y<rangey1):
+    if(event.x>rangex and event.x< rangex1 and event.y>rangey
+     and event.y<rangey1):
         data.mode = "demoLevel"
 def helpKeyPressed(event, data):
     data.mode = "demoLevel"
@@ -267,25 +275,25 @@ class Candy(object):
             self.color = "clear"
         return self.color == other.color
 
-class SideStripedCandy(object):
+class PackagedCandy(object):
     def __init__(self, x, y, color):
         self.x = x
         self.y = y
         self.r = 15
         self.color = color
-        blueCandy = PhotoImage(file = "blueH.gif").subsample(2,2)
-        greenCandy = PhotoImage(file = "greenH.gif").subsample(2,2)
-        redCandy = PhotoImage(file = "redH.gif").subsample(2,2)
-        yellowCandy = PhotoImage(file = "yellowH.gif").subsample(2,2)
-        purpleCandy = PhotoImage(file = "purpleH.gif").subsample(2,2)
-        orangeCandy = PhotoImage(file = "orangeH.gif").subsample(2,2)
-        if(self.color == "blue"): self.image = blueCandy
-        elif(self.color == "green"): self.color = greenCandy
-        elif(self.color == "orange"): self.color = orangeCandy
-        elif(self.color == "red"): self.color = redCandy
-        elif(self.color == "purple"): self.color = purpleCandy
-        elif(self.color == "yellow"): self.color = yellowCandy
-        elif(self.image == None): self.color = "clear"
+        bluePack = PhotoImage(file = "Wrapped_blue.gif").subsample(2,2)
+        greenPack = PhotoImage(file = "Wrapped_green.gif").subsample(2,2)
+        redPack = PhotoImage(file = "Wrapped_red.gif").subsample(2,2)
+        yellowPack = PhotoImage(file = "Wrapped_yellow.gif").subsample(2,2)
+        purplePack = PhotoImage(file = "Wrapped_purple.gif").subsample(2,2)
+        orangePack = PhotoImage(file = "Wrapped_orange.gif").subsample(2,2)
+
+        if(self.color == "blueP"): self.image = bluePack
+        if(self.color == "greenP"): self.image = greenPack
+        if(self.color == "yellowP"): self.image = yellowPack
+        if(self.color == "orangeP"): self.image = orangePack
+        if(self.color == "purpleP"): self.image = purplePack
+        if(self.color == "redP"): self.image = redPack
 
     def draw(self, canvas):
         if(self.image == None):
@@ -299,27 +307,6 @@ class SideStripedCandy(object):
         if(type(self) == None):
             self.color = "clear"
         return self.color == other.color
-
-class UpStripedCandy(Candy):
-    def __init__(self, x, y):
-        super().__init__(x, y)
-        blueCandy = PhotoImage(file = "blueV.gif").subsample(2,2)
-        greenCandy = PhotoImage(file = "greenV.gif").subsample(2,2)
-        redCandy = PhotoImage(file = "redV.gif").subsample(2,2)
-        yellowCandy = PhotoImage(file = "yellowV.gif").subsample(2,2)
-        purpleCandy = PhotoImage(file = "purpleV.gif").subsample(2,2)
-        orangeCandy = PhotoImage(file = "orangeV.gif").subsample(2,2)
-
-
-class PackagedCandy(Candy):
-    def __init__(self, x, y):
-        super().__init__(x, y)
-        blueCandy = PhotoImage(file = "Wrapped_blue.gif").subsample(2,2)
-        greenCandy = PhotoImage(file = "Wrapped_green.gif").subsample(2,2)
-        redCandy = PhotoImage(file = "Wrapped_red.gif").subsample(2,2)
-        yellowCandy = PhotoImage(file = "Wrapped_yellow.gif").subsample(2,2)
-        purpleCandy = PhotoImage(file = "Wrapped_purple.gif").subsample(2,2)
-        orangeCandy = PhotoImage(file = "Orange_wrapped.gif").subsample(2,2)
 
 class ColorBomb(Candy):
     def __init__(self, x, y):
@@ -342,7 +329,7 @@ def makeDivisible(num, divider):
     return num+x
 
 def create2dBoard(data):
-    rows = 9 ; cols = 9
+    rows = data.rows ; cols = data.cols
     for row in range(20, 288, 32):
         for col in range(70, 358, 32):
             data.cells.append(Candy(row, col))
@@ -356,7 +343,7 @@ def isLegal(candy, otherCandy):
 
 def replaceBomb(candy, other, data):
     data.score+= 200
-    (rows, cols) = (9, 9)
+    (rows, cols) = (data.rows, data.cols)
     if(candy.color != "colorful"):
         color = candy.color
         checkCandy = other
@@ -373,7 +360,7 @@ def replaceBomb(candy, other, data):
                 clearAllOfColor(data, color)
 
 def clearAllOfColor(data, color):
-    (rows, cols) = (9, 9)
+    (rows, cols) = (data.rows, data.cols)
     for row in range(rows):
         for col in range(cols):
             if(data.candies[row][col].color == color):
@@ -381,12 +368,34 @@ def clearAllOfColor(data, color):
                 data.candies[row][col] = Candy(candy.x, candy.y)
 
 def demoLevelKeyPressed(event, data):
-    print("hi")
-    m = util.findMatchingNum(
+    pass
+
+def callAll(data):
+    (l, flag1) = util.findMatchingNum(
         data.candies,
-        len(data.candies),
-        len(data.candies[0]),
+        data.rows,
+        data.cols,
+        3)
+    (n, flag2) = util.findMatchingNum(
+        data.candies,
+        data.rows,
+        data.cols,
         4)
+    (m, flag3) = util.findMatchingNum(
+        data.candies,
+        data.rows,
+        data.cols,
+        5)
+    if(m == None and n== None and l==None):
+        return False
+    return True
+
+def demoLevelTimerFired(data):
+    (m, flag5) = util.findMatchingNum(
+        data.candies,
+        data.rows,
+        data.cols,
+        5)
     if(m!= None):
         (x, y) = m[2]
         candy = data.candies[x][y]
@@ -396,19 +405,46 @@ def demoLevelKeyPressed(event, data):
                 data.candies[row][col].color = "clear"
                 data.candies[row][col].image = None
 
-    l = util.findMatchingNum(
+    (n, flag4) = util.findMatchingNum(
         data.candies,
-        len(data.candies),
-        len(data.candies[0]),
+        data.rows,
+        data.cols,
+        4)
+    if(n != None):
+        letter = util.findOrientation(n)
+        for (row, col) in n:
+            color = data.candies[row][col].color
+            image = util.findImage(color, letter)
+            data.candies[row][col].image = image
+            data.candies[row][col].color = color + letter
+
+    package = util.findPackage(
+        data.candies,
+        data.rows,
+        data.cols,
+        3)
+    if(package != None):
+        (x, y) = package[2]
+        color = data.candies[x][y].color + "P"
+        candy = data.candies[x][y]
+        data.candies[x][y] = PackagedCandy(candy.x, candy.y, color)
+        for (row, col) in package:
+            if(data.candies[row][col].color != color):
+                data.candies[row][col].color = "clear"
+                data.candies[row][col].image = None
+
+    (l, flag3) = util.findMatchingNum(
+        data.candies,
+        data.rows,
+        data.cols,
         3)
     if(l != None):
         for (row, col) in l:
             data.candies[row][col].color = "clear"
             data.candies[row][col].image = None
 
-def demoLevelTimerFired(data):
     gameOver(data)
-    (rows, cols) = (9,9)
+    (rows, cols) = (data.rows,data.cols)
     for row in range(rows):
         for col in range(cols):
             if(data.candies[row][col].color == "clear"):
@@ -425,48 +461,82 @@ def gameOver(data):
         data.passed1 = True
         data.gameOver1 = True
 
-#taken from notes
-def rgbString(red, green, blue):
-    return "#%02x%02x%02x" % (red, green, blue)
-
 def demoLevelRedrawAll(canvas, data):
-    (rows, cols) = (9, 9)
+    (rows, cols) = (data.rows, data.cols)
     util.drawBackground(canvas, data)
     for row in range(rows):
         for col in range(cols):
             data.candies[row][col].draw(canvas)
 
 def demoLevelMousePressed(event, data):
-    (rows, cols) = (9, 9)
-    if(event.x>5 and event.x<30 and event.y>445 and event.y<490):
+    (rows, cols) = (data.rows, data.cols)
+    if(event.x> 7 and event.x<40 and event.y>5 and event.y<30 and 
+        data.swapUsed == False):
+        data.swapHand = True
+    elif(event.x> 85 and event.x<115 and event.y>3 and event.y<25 and 
+        data.hammerUsed == False):
+        data.hammer = True
+    elif(data.hammer == True):
+        (x, y, row, col, candy) = util.findPosCandy(event.x, event.y, data)
+        data.candies[row][col] = Candy(x, y)
+        data.hammer = False ; data.hammerUsed = True
+    elif(event.x>50 and event.x<80 and event.y>5 and event.y<25):
+        data.moves +=5
+    elif(event.x>5 and event.x<30 and event.y>445 and event.y<490):
         data.mode = "help"
-    for row in range(rows):
-        for col in range(cols):
-            candy = data.candies[row][col]
-            (x0, y0, x1, y1) = (candy.x-candy.r, candy.y-candy.r,
-                                candy.x+candy.r, candy.y+candy.r)
-            if(event.x>x0 and event.y>y0 and event.x<x1 and event.y<y1):
-                if(data.oneClicked is False):
-                    data.oneClicked = True
-                    (data.swapx, data.swapY, data.row, data.col,
-                        data.swapCandy) =(candy.x, candy.y, row, col, candy)
-                    return
-                elif(data.oneClicked is True):
-                    data.oneClicked = False
-                    if(isLegal(candy, data.candies[data.row][data.col])):
-                        data.moves-=1
-                        data.candies[data.row][data.col].x = candy.x
-                        data.candies[data.row][data.col].y = candy.y
-                        data.candies[data.row][data.col] = candy
-                        data.candies[row][col].x = data.swapx
-                        data.candies[row][col].y = data.swapY
-                        data.candies[row][col] = data.swapCandy
-                        if(candy.color == "colorful" or
-                            data.swapCandy.color == "colorful"):
-                            replaceBomb(candy, data.swapCandy, data)
-                    (data.swapx, data.swapY, data.row, data.col,
-                     data.swapCandy) =  (None, None, None, None, None)
-                    return
+    elif(data.swapHand == True and data.swap1 == True):
+        (x, y, row, col, candy) = util.findPosCandy(event.x, event.y, data)
+        data.candies[data.row][data.col].x = x
+        data.candies[data.row][data.col].y = y
+        data.candies[data.row][data.col] = candy
+        data.candies[row][col].x = data.swapx
+        data.candies[row][col].y = data.swapY
+        data.candies[row][col] = data.swapCandy
+        data.swapHand = False; data.swap1 = False; data.swapUsed = True
+        (data.swapx, data.swapY, data.row, data.col,
+            data.swapCandy) =  (None, None, None, None, None)
+    elif(data.swapHand == True):
+        (data.swapx, data.swapY, data.row, data.col, 
+            data.swapCandy) = util.findPosCandy(event.x, event.y, data)
+        data.swap1 = True
+    else:
+        for row in range(rows):
+            for col in range(cols):
+                candy = data.candies[row][col]
+                (x0, y0, x1, y1) = (candy.x-candy.r, candy.y-candy.r,
+                                    candy.x+candy.r, candy.y+candy.r)
+                if(event.x>x0 and event.y>y0 and event.x<x1 and event.y<y1):
+                    if(data.oneClicked is False):
+                        data.oneClicked = True
+                        (data.swapx, data.swapY, data.row, data.col,
+                            data.swapCandy) =(candy.x, candy.y, row, col, candy)
+                        return
+                    elif(data.oneClicked is True):
+                        data.oneClicked = False
+                        if(isLegal(candy, data.candies[data.row][data.col])):
+                            data.moves-=1
+                            data.candies[data.row][data.col].x = candy.x
+                            data.candies[data.row][data.col].y = candy.y
+                            data.candies[data.row][data.col] = candy
+                            data.candies[row][col].x = data.swapx
+                            data.candies[row][col].y = data.swapY
+                            data.candies[row][col] = data.swapCandy
+                            if(candy.color == "colorful" or
+                                data.swapCandy.color == "colorful"):
+                                replaceBomb(candy, data.swapCandy, data)
+                            elif(callAll(data) == False):
+                                data.moves += 1
+                                (data.swapx, data.swapY,data.swapCandy) = (data.candies[row][col].x, data.candies[row][col].y,data.candies[row][col])
+                                data.candies[row][col].x = data.candies[data.row][data.col].x
+                                data.candies[row][col].y = data.candies[data.row][data.col].y
+                                data.candies[row][col] = data.candies[data.row][data.col]
+                                data.candies[data.row][data.col].x = data.swapx
+                                data.candies[data.row][data.col].y = data.swapY
+                                data.candies[data.row][data.col] = data.swapCandy
+                        (data.swapx, data.swapY, data.row, data.col,
+                         data.swapCandy) =  (None, None, None, None, None)
+                        return
+
 
 ####################################
 # level2 mode
@@ -540,5 +610,10 @@ run(300, 500)
 #http://www.technologytell.com/apple/108797/appidemic-candy-cruch-from-king-com/
 #http://ramp.ie/index.php/games/ramp-randoms-candy-crush-saga-devil/
 
+
+# fix
+# swap if None
+
 #Questions to ask Sarah
 #how do i inherit a level
+#git hub
