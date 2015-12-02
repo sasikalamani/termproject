@@ -23,7 +23,7 @@ def findPackage(data, rows, cols, num):
     for row in range(rows):
         for col in range(cols):
             result = checkPackage(row, col, num, data)
-            if len(result) == num:
+            if len(result) == num * 2:
                 return result
     return None
 
