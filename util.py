@@ -19,13 +19,13 @@ def findMatchingNum(data, rows, cols, num):
                 return (result, flag)
     return (None, flag)
 
-def findPackage(data, rows, cols, num):
+def findPackage(data, rows, cols):
     for row in range(rows):
         for col in range(cols):
-            result = checkPackage(row, col, num, data)
-            if len(result) == num * 2:
-                return result
-    return None
+            result = checkPackage(data, row, col)
+            if (result!= None):
+                return (result, row, col)
+    return (None, None, None)
 
 """ Given an initial row, column, returns an array of cell locations that match
     whether the color matches the initial location num times, horizontally, or
@@ -53,32 +53,41 @@ def checkRowCol(startRow, startCol, num, data):
             else:
                 result.append((checkRow, checkCol))
                 if(len(result) == num):
+                    #flag = findFlag(result, data)
                     return (result, flag)
     return (result, flag)
 
-def checkPackage(startRow, startCol, num, data):
-    color = data[startRow][startCol]
+def findFlag(result, data):
+    flag = None
+    counter += 1
+    for (row, col) in result:
+        if("V" in data[row][col].color or "H" in data[row][col].color):
+            flag = data[row][col].color[-1:]
+            data[row][col].color = data[row][col].color[:-1]
+    return flag
+
+def checkPackage(data, startRow, startCol):
+    num = data[startRow][startCol]
     rows = len(data)
     cols = len(data[0])
-    directions = [(0, 1), (1, 0)]
-    for dirs in range(len(directions)):
-        result = list()
-        (drow, dcol) = directions[dirs]
-        for i in range(num):
-            checkRow = startRow + i*drow
-            checkCol = startCol + i*dcol
-            if ((checkRow < 0) or (checkRow >= rows) or (checkCol < 0) or (checkCol >= cols)):
-                break
-            if("V" in data[checkRow][checkCol].color or "H" in data[checkRow][checkCol].color):
-                data[checkRow][checkCol].color = data[checkRow][checkCol].color[:-1]
-            # Check for out of bounds
-            if ((data[checkRow][checkCol] != color)):
-                pass
-            else:
-                result.append((checkRow, checkCol))
-                if(len(result) == num*2):
-                    return result
-    return result
+    dirs = [((-1, 0), (0, -1)), ((-1, 0), (0, 1)), ((1, 0), (0, -1)), ((1, 0), (0, 1))]
+    for dir in range(len(dirs)):
+        result = set()
+        for direction in dirs[dir]:
+            (drow, dcol) = direction
+            for i in range(3):
+                checkRow = startRow + i*drow
+                checkCol = startCol + i*dcol
+                if(checkRow< 0 or checkRow>=rows or checkCol< 0 
+                    or checkCol>=cols):
+                    break
+                if(data[checkRow][checkCol] != num):
+                    break
+                else:
+                    result.add((checkRow, checkCol))
+                    if(len(result) == 5):
+                        return result
+    return None
 
 def findImage(color, letter):
     blueH = PhotoImage(file = "blueH.gif").subsample(2,2)

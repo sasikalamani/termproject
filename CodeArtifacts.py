@@ -25,11 +25,14 @@ def init(data):
     data.openLocks = []
     data.swapx = None
     data.swapY = None
+    init2(data)
+
+def init2(data):
     data.swapCandy = None
     data.score = 0
     data.candies = util.turnTo2Dlist(data.cells, data.rows, data.cols)
     data.moves = 10
-    data.target = 3500
+    data.target = 10000
     data.passed1 = False
     data.timerDelay = 50
     data.counter = 0
@@ -368,11 +371,11 @@ def clearAllOfColor(data, color):
                 candy = data.candies[row][col]
                 data.candies[row][col] = Candy(candy.x, candy.y)
 
-def clearARow(data, rowOrCOl, dirs):
+def clearARow(data, rowOrCol, dirs):
     if(dirs == "V"):
         for row in range(data.rows):
-            (x, y) = (data.candies[row][rowOrCOl].x, data.candies[row][rowOrCOl].y)
-            data.candies[row][rowOrCOl] = Candy(x, y)
+            (x, y) = (data.candies[row][rowOrCol].x, data.candies[row][rowOrCol].y)
+            data.candies[row][rowOrCol] = Candy(x, y)
     elif(dirs == "H"):
         for col in range(data.cols):
             (x, y) = (data.candies[rowOrCol][col].x, data.candies[rowOrCol][col].y)
@@ -429,20 +432,19 @@ def demoLevelTimerFired(data):
             data.candies[row][col].image = image
             data.candies[row][col].color = color + letter
 
-    package = util.findPackage(
+    (package, row, col)= util.findPackage(
         data.candies,
         data.rows,
-        data.cols,
-        3)
+        data.cols)
+
     if(package != None):
-        (x, y) = package[2]
-        color = data.candies[x][y].color + "P"
-        candy = data.candies[x][y]
-        data.candies[x][y] = PackagedCandy(candy.x, candy.y, color)
-        for (row, col) in package:
-            if(data.candies[row][col].color != color):
-                data.candies[row][col].color = "clear"
-                data.candies[row][col].image = None
+        color = data.candies[row][col].color + "P"
+        candy = data.candies[row][col]
+        data.candies[row][col] = PackagedCandy(candy.x, candy.y, color)
+        for (x, y) in package:
+            if(data.candies[x][y].color != color):
+                data.candies[x][y].color = "clear"
+                data.candies[x][y].image = None
 
     (l, flag3) = util.findMatchingNum(
         data.candies,
@@ -494,7 +496,7 @@ def demoLevelMousePressed(event, data):
         if(util.findPosCandy(event.x, event.y, data) != None):
             (x, y, row, col, candy) = util.findPosCandy(event.x, event.y, data)
             data.candies[row][col] = Candy(x, y)
-            data.hammer = False ; data.hammerUsed = True
+            data.hammer = False ; #data.hammerUsed = True
     elif(event.x>50 and event.x<80 and event.y>5 and event.y<25):
         data.moves +=5
     elif(event.x>5 and event.x<30 and event.y>445 and event.y<490):
@@ -544,7 +546,7 @@ def demoLevelMousePressed(event, data):
                             data.moves += 1
                             (data.swapx, data.swapY, 
                                 data.swapCandy) = (data.candies[row][col].x, 
-                                data.candies[row][col].y,data.candies[row][col])
+                            data.candies[row][col].y,data.candies[row][col])
                             data.candies[row][col].x = data.candies[data.row][data.col].x
                             data.candies[row][col].y = data.candies[data.row][data.col].y
                             data.candies[row][col] = data.candies[data.row][data.col]

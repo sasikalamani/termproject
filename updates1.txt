@@ -1,0 +1,6 @@
+Only one document in the file was changed except for 
+the code artifacts and the time sheet which was the project proposal.
+The proposal now explains the second level which is the level with
+the jelly. It also describes the power ups. There is no timer 
+for the game, instead it is the number of moves. Also, the last level where
+the user create his/her own level will not include chocolate anymore.
